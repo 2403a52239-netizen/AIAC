@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Found Item</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background: var(--page-background);
+        }
+        .container {
+            max-width: 600px;
+        }
+        h2 {
+            color: var(--accent-found);
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--accent-found);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .submit-btn {
+            background: var(--background-found);
+        }
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #00f2fe 0%, #10b981 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎯 Report Found Item</h2>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Item Name:</label>
+                <input type="text" id="name" name="name" required placeholder="e.g., iPhone 13, Wallet">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required placeholder="Describe the item in detail"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="location">Location Found:</label>
+                <input type="text" id="location" name="location" required placeholder="Where did you find it?">
+            </div>
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" id="image" name="image" required accept="image/*">
+            </div>
+            <button type="submit" class="submit-btn">Submit Report</button>
+        </form>
+        <a href="/" class="back-link">← Back to Home</a>
+    </div>
+</body>
+</html>
