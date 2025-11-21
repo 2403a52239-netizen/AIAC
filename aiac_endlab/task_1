@@ -1,0 +1,27 @@
+def clean_email_data(email_list):
+    """
+    Clean a list of email addresses.
+
+    Steps:
+    1. Convert all characters to lowercase.
+    2. Remove leading/trailing whitespace.
+    3. Remove duplicates while preserving order.
+    """
+    seen = set()
+    cleaned_list = []
+
+    for email in email_list:
+        cleaned_email = email.strip().lower()
+        if cleaned_email not in seen:
+            seen.add(cleaned_email)
+            cleaned_list.append(cleaned_email)
+
+    return cleaned_list
+
+
+if __name__ == "__main__":
+    # User input section (runs only when script is executed directly)
+    user_input = input("Enter email addresses separated by commas: ")
+    raw_emails = user_input.split(",")
+    print("Original:", raw_emails)
+    print("Cleaned:", clean_email_data(raw_emails))

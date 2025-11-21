@@ -1,0 +1,61 @@
+import unittest
+
+def clean_email_data(email_list):
+    """
+    Clean a list of email addresses.
+
+    Steps:
+    1. Convert all characters to lowercase.
+    2. Remove leading/trailing whitespace.
+    3. Remove duplicates while preserving order.
+    """
+    seen = set()
+    cleaned_list = []
+
+    for email in email_list:
+        cleaned_email = email.strip().lower()
+        if cleaned_email not in seen:
+            seen.add(cleaned_email)
+            cleaned_list.append(cleaned_email)
+
+    return cleaned_list
+
+
+# ---------- Unit Tests ----------
+class TestCleanEmailData(unittest.TestCase):
+
+    def test_basic_case(self):
+        raw = [" Alice@example.com ", "BOB@Example.com", "alice@example.com", "charlie@Example.com "]
+        expected = ['alice@example.com', 'bob@example.com', 'charlie@example.com']
+        self.assertEqual(clean_email_data(raw), expected)
+
+    def test_empty_list(self):
+        self.assertEqual(clean_email_data([]), [])
+
+    def test_already_clean(self):
+        raw = ["john@example.com", "mary@example.com"]
+        expected = ["john@example.com", "mary@example.com"]
+        self.assertEqual(clean_email_data(raw), expected)
+
+    def test_mixed_case_and_spaces(self):
+        raw = ["  JOHN@EXAMPLE.COM  ", "john@example.com", "  Mary@Example.Com "]
+        expected = ["john@example.com", "mary@example.com"]
+        self.assertEqual(clean_email_data(raw), expected)
+
+    def test_multiple_duplicates(self):
+        raw = ["a@b.com", "A@B.com", "a@b.com", "c@d.com", "C@D.com"]
+        expected = ["a@b.com", "c@d.com"]
+        self.assertEqual(clean_email_data(raw), expected)
+
+
+if __name__ == "__main__":
+    # Run tests first
+    print("Running unit tests...\n")
+    unittest.main(exit=False)
+
+    # Then run user input section
+    print("\n--- User Input Section ---")
+    user_input = input("Enter email addresses separated by commas: ")
+    raw_emails = user_input.split(",")
+    print("Original:", raw_emails)
+    print("Cleaned:", clean_email_data(raw_emails))

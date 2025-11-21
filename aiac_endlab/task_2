@@ -1,0 +1,64 @@
+import requests  # Import the requests library to make HTTP calls
+
+# Your personal API key for OpenWeatherMap
+API_KEY: str = "0ccf020f12840b0b776fe94c31d5c407"  # replace with your real key
+# Base URL for the OpenWeatherMap current weather endpoint
+BASE_URL: str = "https://api.openweathermap.org/data/2.5/weather"
+
+def get_weather(city_name: str) -> float | None:
+    """
+    Fetch current temperature for a given city using OpenWeatherMap API.
+
+    Args:
+        city_name (str): Name of the city.
+
+    Returns:
+        float | None: Temperature in Celsius if successful, else None.
+    """
+    # Construct the full API request URL with city, API key, and metric units
+    url: str = f"{BASE_URL}?q={city_name}&appid={API_KEY}&units=metric"
+
+    try:
+        # Send GET request to the API with a timeout of 5 seconds
+        response: requests.Response = requests.get(url, timeout=5)
+
+        # If the response status code is not 200 (OK), print error and return None
+        if response.status_code != 200:
+            print(f"Error: Received status code {response.status_code}")
+            return None
+
+        # Parse the JSON response into a Python dictionary
+        data: dict = response.json()
+
+        # Extract the temperature from the "main" section of the JSON
+        return data.get("main", {}).get("temp", None)
+
+    # Handle timeout errors
+    except requests.exceptions.Timeout:
+        print("Error: Request timed out")
+        return None
+    # Handle connection errors (e.g., API unreachable)
+    except requests.exceptions.ConnectionError:
+        print("Error: Connection error (API unreachable)")
+        return None
+    # Handle JSON decoding errors
+    except ValueError:
+        print("Error: Failed to decode JSON")
+        return None
+
+
+# ------------------ User Input ------------------
+
+if __name__ == "__main__":
+    # Prompt the user to enter a city name
+    city: str = input("Enter city name: ").strip()
+
+    # Call the get_weather function with the user input
+    temperature = get_weather(city)
+
+    # Display the result if temperature is available
+    if temperature is not None:
+        print(f"The current temperature in {city} is {temperature}°C")
+    else:
+        # Inform the user if weather data could not be fetched
+        print("Sorry, could not fetch the weather data.")

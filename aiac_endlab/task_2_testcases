@@ -1,0 +1,69 @@
+import unittest
+import requests
+from unittest.mock import patch, Mock
+
+API_KEY = "0ccf020f12840b0b776fe94c31d5c407"  # replace with your real key
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+
+def get_weather(city_name):
+    """
+    Fetch current temperature for a given city using OpenWeatherMap API.
+
+    Args:
+        city_name (str): Name of the city.
+
+    Returns:
+        float | None: Temperature in Celsius if successful, else None.
+    """
+    url = f"{BASE_URL}?q={city_name}&appid={API_KEY}&units=metric"
+
+    try:
+        response = requests.get(url, timeout=5)
+
+        if response.status_code != 200:
+            return None
+
+        data = response.json()
+        return data.get("main", {}).get("temp", None)
+
+    except requests.exceptions.Timeout:
+        return None
+    except requests.exceptions.ConnectionError:
+        return None
+    except ValueError:
+        return None
+
+
+# ------------------ Unit Tests ------------------
+
+class TestWeatherAPI(unittest.TestCase):
+    @patch("requests.get")
+    def test_get_weather_success(self, mock_get):
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"main": {"temp": 25.5}}
+        mock_get.return_value = mock_response
+
+        self.assertEqual(get_weather("London"), 25.5)
+
+    @patch("requests.get", side_effect=requests.exceptions.ConnectionError)
+    def test_get_weather_connection_error(self, mock_get):
+        self.assertIsNone(get_weather("Paris"))
+
+    @patch("requests.get", side_effect=requests.exceptions.Timeout)
+    def test_get_weather_timeout(self, mock_get):
+        self.assertIsNone(get_weather("Tokyo"))
+
+    @patch("requests.get")
+    def test_get_weather_bad_status(self, mock_get):
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_get.return_value = mock_response
+
+        self.assertIsNone(get_weather("InvalidCity"))
+
+
+# ------------------ Run Tests ------------------
+
+if __name__ == "__main__":
+    unittest.main()
